@@ -2,22 +2,15 @@ import type { ConnectionState, MessageHandler } from './types';
 
 const ICE_SERVERS = {
 	iceServers: [
-		// Google STUN servers
+		// Google STUN server
 		{ urls: 'stun:stun.l.google.com:19302' },
-		{ urls: 'stun:stun1.l.google.com:19302' },
-		// Free public TURN servers from Open Relay Project
+		// Free public TURN server from Open Relay Project (multiple transports in one entry)
 		{
-			urls: 'turn:openrelay.metered.ca:80',
-			username: 'openrelayproject',
-			credential: 'openrelayproject'
-		},
-		{
-			urls: 'turn:openrelay.metered.ca:443',
-			username: 'openrelayproject',
-			credential: 'openrelayproject'
-		},
-		{
-			urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+			urls: [
+				'turn:openrelay.metered.ca:80',
+				'turn:openrelay.metered.ca:443',
+				'turn:openrelay.metered.ca:443?transport=tcp'
+			],
 			username: 'openrelayproject',
 			credential: 'openrelayproject'
 		}
@@ -35,39 +28,35 @@ export function createConnection() {
 	const messageHandlers = new Map<string, MessageHandler>();
 
 	function initPeerConnection() {
-		pc = new RTCPeerConnection(ICE_SERVERS);
+		const connection = new RTCPeerConnection(ICE_SERVERS);
+		pc = connection;
 
-		pc.oniceconnectionstatechange = () => {
-			if (!pc) return;
-			console.log('ICE connection state:', pc.iceConnectionState);
+		connection.oniceconnectionstatechange = () => {
+			console.log('ICE connection state:', connection.iceConnectionState);
 
-			if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
+			if (connection.iceConnectionState === 'connected' || connection.iceConnectionState === 'completed') {
 				connectionState = 'connected';
-			} else if (pc.iceConnectionState === 'disconnected') {
+			} else if (connection.iceConnectionState === 'disconnected') {
 				connectionState = 'disconnected';
-			} else if (pc.iceConnectionState === 'failed') {
+			} else if (connection.iceConnectionState === 'failed') {
 				console.error('ICE connection failed');
 				connectionState = 'disconnected';
 			}
 		};
 
-		pc.onicegatheringstatechange = () => {
-			if (!pc) return;
-			console.log('ICE gathering state:', pc.iceGatheringState);
-		};
-
-		pc.onicecandidate = (event) => {
+		connection.onicecandidate = (event) => {
 			if (event.candidate) {
 				console.log('ICE candidate:', event.candidate.type, event.candidate.protocol);
+			} else {
+				console.log('ICE candidate gathering complete');
 			}
 		};
 
-		pc.onconnectionstatechange = () => {
-			if (!pc) return;
-			console.log('Connection state:', pc.connectionState);
+		connection.onconnectionstatechange = () => {
+			console.log('Connection state:', connection.connectionState);
 		};
 
-		return pc;
+		return connection;
 	}
 
 	function setupDataChannel(channel: RTCDataChannel) {
@@ -115,9 +104,8 @@ export function createConnection() {
 				clearTimeout(timeout);
 				resolve();
 			} else {
-				const originalHandler = connection.onicegatheringstatechange;
-				connection.onicegatheringstatechange = (event) => {
-					if (originalHandler) originalHandler.call(connection, event);
+				connection.onicegatheringstatechange = () => {
+					console.log('ICE gathering state:', connection.iceGatheringState);
 					if (connection.iceGatheringState === 'complete') {
 						clearTimeout(timeout);
 						resolve();
@@ -156,9 +144,8 @@ export function createConnection() {
 				clearTimeout(timeout);
 				resolve();
 			} else {
-				const originalHandler = connection.onicegatheringstatechange;
-				connection.onicegatheringstatechange = (event) => {
-					if (originalHandler) originalHandler.call(connection, event);
+				connection.onicegatheringstatechange = () => {
+					console.log('ICE gathering state:', connection.iceGatheringState);
 					if (connection.iceGatheringState === 'complete') {
 						clearTimeout(timeout);
 						resolve();
