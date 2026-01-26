@@ -101,6 +101,8 @@ export function createConnection() {
 
 		offer = JSON.stringify(connection.localDescription);
 		console.log('Offer created with', (offer.match(/a=candidate/g) || []).length, 'candidates');
+		console.log('Offer length:', offer.length, 'characters');
+		console.log('Offer state updated:', offer.substring(0, 50) + '...');
 		return offer;
 	}
 
