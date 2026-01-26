@@ -1,29 +1,26 @@
 <script lang="ts">
-	import { createConnection } from '$lib/webrtc/connection.svelte';
+	import { createPeerJSConnection } from '$lib/webrtc/peerjs-connection.svelte';
 	import { createGameState } from '$lib/game/state.svelte';
-	import ConnectionPanel from '$lib/components/ConnectionPanel.svelte';
+	import PeerJSConnectionPanel from '$lib/components/PeerJSConnectionPanel.svelte';
 	import GameBoard from '$lib/components/GameBoard.svelte';
 
 	let isHost = $state(false);
-	let connection = createConnection();
+	let connection = createPeerJSConnection();
 	let gameState = $state(createGameState(false));
 
 	// Handle connection setup
-	async function handleCreateOffer() {
-		isHost = true;
-		gameState = createGameState(true);
-		await connection.createOffer();
-		gameState.setPhase('CONFIGURING');
+	function handleInitialize(isHostPlayer: boolean) {
+		isHost = isHostPlayer;
+		gameState = createGameState(isHostPlayer);
+		connection.initialize(isHostPlayer);
+
+		if (isHostPlayer) {
+			// Wait for connection, then show configuration
+		}
 	}
 
-	async function handleAcceptOffer(offer: string) {
-		isHost = false;
-		gameState = createGameState(false);
-		await connection.acceptOffer(offer);
-	}
-
-	async function handleAcceptAnswer(answer: string) {
-		await connection.acceptAnswer(answer);
+	function handleConnect(peerId: string) {
+		connection.connectToPeer(peerId);
 	}
 
 	// Game event handlers
@@ -84,6 +81,7 @@
 	// Message handlers
 	connection.onMessage('CONFIGURE_ENDPOINTS', (message) => {
 		gameState.setEndpoints(message.left, message.right);
+		gameState.setPhase('CLUE_GIVING');
 	});
 
 	connection.onMessage('START_ROUND', (message) => {
@@ -110,17 +108,27 @@
 		gameState.nextRound();
 		gameState.setPhase('CLUE_GIVING');
 	});
+
+	// Set initial phase when connected
+	$effect(() => {
+		if (connection.connectionState === 'connected' && gameState.phase === 'WAITING') {
+			if (isHost) {
+				gameState.setPhase('CONFIGURING');
+			} else {
+				// Guest waits for host to configure
+			}
+		}
+	});
 </script>
 
 <div class="min-h-screen bg-gray-50">
 	{#if connection.connectionState !== 'connected'}
-		<ConnectionPanel
+		<PeerJSConnectionPanel
 			connectionState={connection.connectionState}
-			offer={connection.offer}
-			answer={connection.answer}
-			onCreateOffer={handleCreateOffer}
-			onAcceptOffer={handleAcceptOffer}
-			onAcceptAnswer={handleAcceptAnswer}
+			myPeerId={connection.myPeerId}
+			errorMessage={connection.errorMessage}
+			onInitialize={handleInitialize}
+			onConnect={handleConnect}
 		/>
 	{:else}
 		<GameBoard
