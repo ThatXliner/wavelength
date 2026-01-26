@@ -13,14 +13,32 @@ export function createPeerJSConnection() {
 	const messageHandlers = new Map<string, MessageHandler>();
 
 	function initialize(isHost: boolean): string {
-		// Create peer - PeerJS cloud provides TURN servers automatically
-		// Using default config which includes reliable PeerJS infrastructure
+		// Create peer with Metered TURN servers (free, no signup required)
 		peer = new Peer({
-			debug: 1, // Reduced logging for better performance
+			debug: 1,
 			config: {
 				iceServers: [
 					{ urls: 'stun:stun.l.google.com:19302' },
-					{ urls: 'stun:stun1.l.google.com:19302' }
+					{
+						urls: 'turn:a.relay.metered.ca:80',
+						username: 'a834b4446e0e8fee7bcd9ddf',
+						credential: 'XuGtKB4MvPfK5kqT'
+					},
+					{
+						urls: 'turn:a.relay.metered.ca:80?transport=tcp',
+						username: 'a834b4446e0e8fee7bcd9ddf',
+						credential: 'XuGtKB4MvPfK5kqT'
+					},
+					{
+						urls: 'turn:a.relay.metered.ca:443',
+						username: 'a834b4446e0e8fee7bcd9ddf',
+						credential: 'XuGtKB4MvPfK5kqT'
+					},
+					{
+						urls: 'turns:a.relay.metered.ca:443?transport=tcp',
+						username: 'a834b4446e0e8fee7bcd9ddf',
+						credential: 'XuGtKB4MvPfK5kqT'
+					}
 				]
 			}
 		});
