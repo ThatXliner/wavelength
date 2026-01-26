@@ -14,8 +14,7 @@ const ICE_SERVERS = {
 			username: 'openrelayproject',
 			credential: 'openrelayproject'
 		}
-	],
-	iceCandidatePoolSize: 10
+	]
 };
 
 export function createConnection() {
@@ -90,31 +89,18 @@ export function createConnection() {
 
 		connectionState = 'connecting';
 
-		const offerDescription = await connection.createOffer();
+		// Create offer with iceRestart to get fresh candidates
+		const offerDescription = await connection.createOffer({ iceRestart: false });
 		await connection.setLocalDescription(offerDescription);
 
-		// Wait for ICE gathering to complete (with timeout)
+		// Use a short delay to gather at least host candidates
+		// This is much faster than waiting for TURN candidates
 		await new Promise<void>((resolve) => {
-			const timeout = setTimeout(() => {
-				console.log('ICE gathering timeout - proceeding anyway');
-				resolve();
-			}, 5000); // 5 second timeout
-
-			if (connection.iceGatheringState === 'complete') {
-				clearTimeout(timeout);
-				resolve();
-			} else {
-				connection.onicegatheringstatechange = () => {
-					console.log('ICE gathering state:', connection.iceGatheringState);
-					if (connection.iceGatheringState === 'complete') {
-						clearTimeout(timeout);
-						resolve();
-					}
-				};
-			}
+			setTimeout(() => resolve(), 100); // Just 100ms
 		});
 
 		offer = JSON.stringify(connection.localDescription);
+		console.log('Offer created with', (offer.match(/a=candidate/g) || []).length, 'candidates');
 		return offer;
 	}
 
@@ -133,28 +119,13 @@ export function createConnection() {
 		const answerDescription = await connection.createAnswer();
 		await connection.setLocalDescription(answerDescription);
 
-		// Wait for ICE gathering to complete (with timeout)
+		// Use a short delay to gather at least host candidates
 		await new Promise<void>((resolve) => {
-			const timeout = setTimeout(() => {
-				console.log('ICE gathering timeout - proceeding anyway');
-				resolve();
-			}, 5000); // 5 second timeout
-
-			if (connection.iceGatheringState === 'complete') {
-				clearTimeout(timeout);
-				resolve();
-			} else {
-				connection.onicegatheringstatechange = () => {
-					console.log('ICE gathering state:', connection.iceGatheringState);
-					if (connection.iceGatheringState === 'complete') {
-						clearTimeout(timeout);
-						resolve();
-					}
-				};
-			}
+			setTimeout(() => resolve(), 100); // Just 100ms
 		});
 
 		answer = JSON.stringify(connection.localDescription);
+		console.log('Answer created with', (answer.match(/a=candidate/g) || []).length, 'candidates');
 		return answer;
 	}
 
