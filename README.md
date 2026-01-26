@@ -9,9 +9,9 @@ A peer-to-peer multiplayer guessing game built with SvelteKit 5 and WebRTC. Two 
 ## How to Play
 
 1. **Connect with a friend:**
-   - One player hosts, the other joins
-   - Exchange WebRTC offers/answers via copy/paste (Discord, text, etc.)
-   - No server needed - direct peer-to-peer connection!
+   - **Host:** Click "Host Game" → Get your Peer ID → Share it with your friend (Discord, text, etc.)
+   - **Joiner:** Click "Join Game" → Enter the host's Peer ID → Click "Connect"
+   - Connection happens automatically via peer-to-peer WebRTC!
 
 2. **Configure the game:**
    - Host sets slider endpoints (e.g., "Hot" ↔ "Cold", "Love it" ↔ "Hate it")
@@ -24,7 +24,7 @@ A peer-to-peer multiplayer guessing game built with SvelteKit 5 and WebRTC. Two 
 
 ## Features
 
-- ✅ **Peer-to-peer** - No server, no backend, just WebRTC magic
+- ✅ **Peer-to-peer** - Direct connection via PeerJS + WebRTC
 - ✅ **Fully client-side** - Deployed as static files on GitHub Pages
 - ✅ **Svelte 5 runes** - Modern reactive programming with `$state`, `$derived`, `$effect`
 - ✅ **TypeScript** - Fully type-safe
@@ -37,7 +37,7 @@ A peer-to-peer multiplayer guessing game built with SvelteKit 5 and WebRTC. Two 
 - **SvelteKit 5** - Full-stack framework with runes
 - **TypeScript** - Type safety
 - **Tailwind CSS 4** - Styling
-- **WebRTC** - Peer-to-peer connections
+- **PeerJS** - WebRTC wrapper for easy peer-to-peer connections
 - **Vite** - Build tool
 - **GitHub Pages** - Static hosting
 
