@@ -8,24 +8,19 @@ export function createPeerJSConnection() {
 	let myPeerId = $state<string>('');
 	let remotePeerId = $state<string>('');
 	let errorMessage = $state<string>('');
+	let retryCount = $state(0);
 
 	const messageHandlers = new Map<string, MessageHandler>();
 
 	function initialize(isHost: boolean): string {
-		// Create peer with configuration
+		// Create peer - PeerJS cloud provides TURN servers automatically
+		// Using default config which includes reliable PeerJS infrastructure
 		peer = new Peer({
+			debug: 1, // Reduced logging for better performance
 			config: {
 				iceServers: [
 					{ urls: 'stun:stun.l.google.com:19302' },
-					{
-						urls: [
-							'turn:openrelay.metered.ca:80',
-							'turn:openrelay.metered.ca:443',
-							'turn:openrelay.metered.ca:443?transport=tcp'
-						],
-						username: 'openrelayproject',
-						credential: 'openrelayproject'
-					}
+					{ urls: 'stun:stun1.l.google.com:19302' }
 				]
 			}
 		});
@@ -55,15 +50,18 @@ export function createPeerJSConnection() {
 	function connectToPeer(peerId: string): void {
 		if (!peer) {
 			console.error('Peer not initialized');
+			errorMessage = 'Peer not initialized. Please refresh and try again.';
 			return;
 		}
 
 		remotePeerId = peerId;
 		connectionState = 'connecting';
+		errorMessage = '';
 		console.log('Connecting to peer:', peerId);
 
 		const conn = peer.connect(peerId, {
-			reliable: true
+			reliable: true,
+			serialization: 'json'
 		});
 
 		setupConnection(conn);
@@ -97,7 +95,7 @@ export function createPeerJSConnection() {
 
 		conn.on('error', (err) => {
 			console.error('Connection error:', err);
-			errorMessage = err.message;
+			errorMessage = `Connection failed: ${err.message}. Try refreshing or use a different network.`;
 			connectionState = 'disconnected';
 		});
 	}
