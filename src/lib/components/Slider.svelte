@@ -25,21 +25,31 @@
 		value = x / rect.width;
 	}
 
+	let pointerId = $state<number | null>(null);
+
 	function handlePointerDown(event: PointerEvent) {
 		if (disabled) return;
 		isDragging = true;
+		pointerId = event.pointerId;
 		updateValue(event.clientX);
-		(event.target as HTMLElement).setPointerCapture(event.pointerId);
+		(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+		event.preventDefault();
 	}
 
 	function handlePointerMove(event: PointerEvent) {
-		if (!isDragging) return;
+		if (!isDragging || pointerId !== event.pointerId) return;
 		updateValue(event.clientX);
+		event.preventDefault();
 	}
 
 	function handlePointerUp(event: PointerEvent) {
+		if (pointerId !== event.pointerId) return;
 		isDragging = false;
-		(event.target as HTMLElement).releasePointerCapture(event.pointerId);
+		pointerId = null;
+		if ((event.currentTarget as HTMLElement).hasPointerCapture(event.pointerId)) {
+			(event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
+		}
+		event.preventDefault();
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
@@ -63,7 +73,9 @@
 
 <div
 	bind:this={sliderRef}
-	class="relative h-16 w-full"
+	class="relative h-16 w-full touch-none select-none"
+	class:cursor-pointer={!disabled}
+	class:cursor-not-allowed={disabled}
 	role="slider"
 	tabindex={disabled ? -1 : 0}
 	aria-valuemin="0"
@@ -71,29 +83,30 @@
 	aria-valuenow={Math.round(value * 100)}
 	aria-disabled={disabled}
 	onkeydown={handleKeyDown}
+	onpointerdown={disabled ? undefined : handlePointerDown}
+	onpointermove={disabled ? undefined : handlePointerMove}
+	onpointerup={disabled ? undefined : handlePointerUp}
+	onpointercancel={disabled ? undefined : handlePointerUp}
 >
 	<!-- Track -->
-	<div class="absolute top-1/2 h-4 w-full -translate-y-1/2 rounded-full bg-gray-200"></div>
+	<div class="absolute top-1/2 h-4 w-full -translate-y-1/2 rounded-full bg-gray-200 pointer-events-none"></div>
 
 	<!-- Target indicator -->
 	{#if showTarget}
 		<div
 			transition:slide={{ duration: 500, easing: cubicOut, axis: 'x' }}
-			class="absolute top-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-green-500"
+			class="absolute top-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-green-500 pointer-events-none"
 			style="left: {targetPosition}"
 		></div>
 	{/if}
 
 	<!-- Handle -->
-	<button
-		type="button"
-		class="absolute top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-lg transition-transform hover:scale-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+	<div
+		class="absolute top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-lg transition-transform pointer-events-none"
+		class:scale-110={isDragging}
+		class:opacity-50={disabled}
 		style="left: {handlePosition}"
-		{disabled}
-		onpointerdown={handlePointerDown}
-		onpointermove={handlePointerMove}
-		onpointerup={handlePointerUp}
 	>
 		<span class="sr-only">Slider handle</span>
-	</button>
+	</div>
 </div>

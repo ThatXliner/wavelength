@@ -131,8 +131,14 @@ export function createGameState(isHost: boolean) {
 		get guessPosition() {
 			return guessPosition;
 		},
+		set guessPosition(value: number) {
+			guessPosition = value;
+		},
 		get currentClue() {
 			return currentClue;
+		},
+		set currentClue(value: string) {
+			currentClue = value;
 		},
 		get isHost() {
 			return isHost;

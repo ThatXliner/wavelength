@@ -216,13 +216,6 @@
 			{@const isCurrentPlayerClueGiver =
 				(localGameState.roundNumber % 2 === 1 && currentLocalPlayer === 'host') ||
 				(localGameState.roundNumber % 2 === 0 && currentLocalPlayer === 'guest')}
-			{@const _ = console.log('DEBUG:', {
-				phase: localGameState.phase,
-				roundNumber: localGameState.roundNumber,
-				currentLocalPlayer,
-				isCurrentPlayerClueGiver,
-				currentClue: localGameState.currentClue
-			})}
 			<GameBoard
 				phase={localGameState.phase}
 				leftEndpoint={localGameState.leftEndpoint}
