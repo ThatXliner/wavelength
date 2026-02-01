@@ -63,7 +63,7 @@
 
 <div
 	bind:this={sliderRef}
-	class="relative h-16 w-full touch-none select-none"
+	class="relative h-16 w-full"
 	role="slider"
 	tabindex={disabled ? -1 : 0}
 	aria-valuemin="0"

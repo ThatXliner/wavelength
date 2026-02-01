@@ -6,13 +6,15 @@
 		myPeerId,
 		errorMessage,
 		onInitialize,
-		onConnect
+		onConnect,
+		onLocalMode
 	}: {
 		connectionState: ConnectionState;
 		myPeerId: string;
 		errorMessage: string;
 		onInitialize: (isHost: boolean) => void;
 		onConnect: (peerId: string) => void;
+		onLocalMode?: () => void;
 	} = $props();
 
 	let mode = $state<'host' | 'join' | null>(null);
@@ -65,22 +67,43 @@
 			<p class="text-blue-700">Connecting...</p>
 		</div>
 	{:else if !mode}
-		<div class="grid grid-cols-2 gap-4">
-			<button
-				onclick={handleHost}
-				class="rounded-lg border-2 border-gray-300 bg-white px-6 py-8 font-medium text-gray-700 transition-colors hover:border-blue-500 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-			>
-				<div class="text-xl font-semibold">Host Game</div>
-				<div class="mt-2 text-sm text-gray-600">Create a new game</div>
-			</button>
+		<div class="space-y-4">
+			{#if onLocalMode}
+				<button
+					onclick={onLocalMode}
+					class="w-full rounded-lg border-2 border-green-400 bg-green-50 px-6 py-8 font-medium text-green-800 transition-colors hover:border-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+				>
+					<div class="text-xl font-semibold">Play on Same Device</div>
+					<div class="mt-2 text-sm text-green-700">Pass and play with a friend</div>
+				</button>
 
-			<button
-				onclick={handleJoin}
-				class="rounded-lg border-2 border-gray-300 bg-white px-6 py-8 font-medium text-gray-700 transition-colors hover:border-blue-500 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-			>
-				<div class="text-xl font-semibold">Join Game</div>
-				<div class="mt-2 text-sm text-gray-600">Join an existing game</div>
-			</button>
+				<div class="relative">
+					<div class="absolute inset-0 flex items-center">
+						<div class="w-full border-t border-gray-300"></div>
+					</div>
+					<div class="relative flex justify-center text-sm">
+						<span class="bg-white px-2 text-gray-500">or play online</span>
+					</div>
+				</div>
+			{/if}
+
+			<div class="grid grid-cols-2 gap-4">
+				<button
+					onclick={handleHost}
+					class="rounded-lg border-2 border-gray-300 bg-white px-6 py-8 font-medium text-gray-700 transition-colors hover:border-blue-500 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+				>
+					<div class="text-xl font-semibold">Host Game</div>
+					<div class="mt-2 text-sm text-gray-600">Create a new game</div>
+				</button>
+
+				<button
+					onclick={handleJoin}
+					class="rounded-lg border-2 border-gray-300 bg-white px-6 py-8 font-medium text-gray-700 transition-colors hover:border-blue-500 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+				>
+					<div class="text-xl font-semibold">Join Game</div>
+					<div class="mt-2 text-sm text-gray-600">Join an existing game</div>
+				</button>
+			</div>
 		</div>
 	{:else if mode === 'host'}
 		<div class="space-y-4">

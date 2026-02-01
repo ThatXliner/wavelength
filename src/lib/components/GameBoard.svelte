@@ -23,7 +23,9 @@
 		onConfigureEndpoints,
 		onSubmitClue,
 		onSubmitGuess,
-		onNextRound
+		onNextRound,
+		isLocalMode = false,
+		localPlayerName = ''
 	}: {
 		phase: GamePhase;
 		leftEndpoint: string;
@@ -42,6 +44,8 @@
 		onSubmitClue: (clue: string) => void;
 		onSubmitGuess: () => void;
 		onNextRound: () => void;
+		isLocalMode?: boolean;
+		localPlayerName?: string;
 	} = $props();
 
 	let localLeftEndpoint = $state('');
@@ -70,6 +74,11 @@
 	<!-- Header -->
 	<div class="text-center">
 		<h1 class="text-3xl font-bold text-gray-800">Wavelength</h1>
+		{#if isLocalMode && localPlayerName}
+			<div class="mt-2 rounded-lg bg-green-100 px-4 py-2 text-sm font-medium text-green-800">
+				👤 {localPlayerName}
+			</div>
+		{/if}
 		{#if phase !== 'CONFIGURING' && phase !== 'WAITING'}
 			<div class="mt-4">
 				<RoleIndicator {roundNumber} role={currentRole} />
