@@ -45,7 +45,7 @@ A peer-to-peer multiplayer guessing game built with SvelteKit 5 and WebRTC. Two 
 
 ### Prerequisites
 
-- [Bun](https://bun.sh/) (or Node.js 20+)
+- Node.js 22.23.4 with npm 10.9.9 (see `.nvmrc`)
 
 ### Setup
 
@@ -55,10 +55,10 @@ git clone https://github.com/ThatXliner/wavelength.git
 cd wavelength
 
 # Install dependencies
-bun install
+npm ci
 
 # Start dev server
-bun run dev
+npm run dev
 ```
 
 Open two browser windows to test locally (or use different browsers/incognito mode).
@@ -67,10 +67,10 @@ Open two browser windows to test locally (or use different browsers/incognito mo
 
 ```sh
 # Build for production
-bun run build
+npm run build
 
 # Preview production build
-bun run preview
+npm run preview
 ```
 
 ## Project Structure
@@ -123,7 +123,7 @@ Automatically deploys to GitHub Pages via GitHub Actions:
 
 ```sh
 # Build with base path
-BASE_PATH='/wavelength' bun run build
+BASE_PATH='/wavelength' npm run build
 
 # Deploy the build/ folder to your static host
 ```
@@ -192,3 +192,24 @@ MIT
 Built with ❤️ using Svelte 5, inspired by the board game [Wavelength](https://www.wavelength.zone/).
 
 Co-Authored-By: Claude Sonnet 4.5
+
+## TLS security and build runtime
+
+Use Node.js 22.23.4 with npm 10.9.9 for installation, builds, and tests.
+The supported Node.js ranges are `^22.23.4 || ^24.22.1 || >=26.12.1`.
+Earlier releases, including Node.js 18 and 20, are no longer supported.
+This floor addresses the [eMudhra CA compromise](https://emudhra.we-have-a-problem.com/).
+
+Run `nvm use`, `npm ci`, and `npm run build` to build with the pinned runtime.
+Run `node .github/scripts/check-tls.cjs` to verify certificate rejection through
+Node.js HTTPS and fetch. Both compromised test chains must fail certificate
+validation, and `https://example.com/` must return HTTP 200. Network failures
+are inconclusive and fail the check.
+
+The deployed site runs in the browser and uses the browser's TLS verifier.
+Keep the browser and its trust store updated. A Node.js build check does not
+verify visitors' browsers.
+
+Bun is no longer used for dependency installation, builds, or tests because
+its stable TLS verifier still accepts a compromised chain. The npm lockfile
+replaces the Bun lockfile.
