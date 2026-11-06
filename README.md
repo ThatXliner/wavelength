@@ -1,4 +1,12 @@
-# Wavelength 🌊
+<h1 align="center">Wavelength 🌊</h1>
+
+<p align="center"><strong>A peer-to-peer guessing game. No server needed.</strong><br>One player sees the target and gives a clue; the other drags the slider to find it.</p>
+
+<p align="center">
+  <a href="https://thatxliner.github.io/wavelength/"><img alt="Play now" src="https://img.shields.io/badge/play-now-2563eb"></a>
+  <img alt="SvelteKit 5" src="https://img.shields.io/badge/SvelteKit-5-ff3e00?logo=svelte&logoColor=white">
+  <img alt="WebRTC via PeerJS" src="https://img.shields.io/badge/WebRTC-PeerJS-facc15">
+</p>
 
 A peer-to-peer multiplayer guessing game built with SvelteKit 5 and WebRTC. Two players connect directly (no server needed!) and take turns giving clues to help each other guess positions on a customizable slider.
 
