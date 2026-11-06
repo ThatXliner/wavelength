@@ -8,6 +8,11 @@
   <img alt="WebRTC via PeerJS" src="https://img.shields.io/badge/WebRTC-PeerJS-facc15">
 </p>
 
+<p align="center">
+  <a href="brag-output/brag.mp4"><img src="brag-output/brag.jpg" alt="Watch the 20-second Wavelength video" width="720"></a>
+  <br><sub><a href="brag-output/brag.mp4">▶ Watch the 20-second video</a></sub>
+</p>
+
 A peer-to-peer multiplayer guessing game built with SvelteKit 5 and WebRTC. Two players connect directly (no server needed!) and take turns giving clues to help each other guess positions on a customizable slider.
 
 ## 🎮 Play Now
