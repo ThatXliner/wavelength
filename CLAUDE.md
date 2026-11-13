@@ -15,7 +15,7 @@ Fetch every section whose use_cases match the task: Svelte 5 and current SvelteK
 ### 3. svelte-autofixer
 
 Analyzes Svelte code and returns issues and suggestions.
-You MUST use this tool whenever writing Svelte code before sending it to the user. Keep calling it until no issues or suggestions are returned.
+Run it on Svelte code you write or change, and fix what it reports. Rerun it until it comes back clean; a suggestion you have a reason to decline can stay, as long as you tell the user which one and why.
 
 ### 4. playground-link
 
