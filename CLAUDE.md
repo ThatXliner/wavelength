@@ -4,13 +4,13 @@ You are able to use the Svelte MCP server, where you have access to comprehensiv
 
 ### 1. list-sections
 
-Use this FIRST to discover all available documentation sections. Returns a structured list with titles, use_cases, and paths.
-When asked about Svelte or SvelteKit topics, ALWAYS use this tool at the start of the chat to find relevant sections.
+Lists the available documentation sections, with titles, use_cases, and paths.
+When a task depends on Svelte 5 or SvelteKit APIs, call it to find the sections that cover them.
 
 ### 2. get-documentation
 
 Retrieves full documentation content for specific sections. Accepts single or multiple sections.
-After calling the list-sections tool, you MUST analyze the returned documentation sections (especially the use_cases field) and then use the get-documentation tool to fetch ALL documentation sections that are relevant for the user's task.
+Fetch every section whose use_cases match the task: Svelte 5 and current SvelteKit APIs differ from the older versions you may remember.
 
 ### 3. svelte-autofixer
 
