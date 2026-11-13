@@ -20,4 +20,4 @@ Run it on Svelte code you write or change, and fix what it reports. Rerun it unt
 ### 4. playground-link
 
 Generates a Svelte Playground link with the provided code.
-After completing the code, ask the user if they want a playground link. Only call this tool after user confirmation and NEVER if code was written to files in their project.
+It is for standalone snippets only: when the code went into project files, don't offer one. For a standalone snippet, offer a link and call this tool only after the user says yes.
